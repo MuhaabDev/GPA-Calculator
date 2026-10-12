@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Backend/Folio.Api.csproj" />
+  <Project Path="Backend.Tests/Folio.Api.Tests.csproj" />
+</Solution>

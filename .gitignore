@@ -1,0 +1,18 @@
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+
+# .NET
+**/bin/
+**/obj/
+
+# Angular
+**/node_modules/
+**/dist/
+.angular/
+
+# Environment files
+.env
+.env.*

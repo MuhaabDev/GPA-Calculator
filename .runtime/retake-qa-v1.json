@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "semesters": [
+    {
+      "id": "qa-s3",
+      "name": "QA · Semester 3",
+      "status": "completed",
+      "courses": [
+        {
+          "id": "qa-alg",
+          "name": "Algorithms",
+          "code": "CS301",
+          "credits": 3,
+          "grade": "A",
+          "excluded": false
+        },
+        {
+          "id": "qa-db",
+          "name": "Databases",
+          "code": "CS202",
+          "credits": 3,
+          "grade": "B",
+          "excluded": false
+        },
+        {
+          "id": "qa-ds",
+          "name": "Data Structures",
+          "code": "CS201",
+          "credits": 3,
+          "grade": "D",
+          "excluded": false
+        }
+      ]
+    },
+    {
+      "id": "qa-s5",
+      "name": "QA · Semester 5",
+      "status": "in-progress",
+      "courses": []
+    }
+  ],
+  "scale": [
+    {
+      "label": "A",
+      "points": 4,
+      "completed": true
+    },
+    {
+      "label": "B",
+      "points": 3,
+      "completed": true
+    },
+    {
+      "label": "C",
+      "points": 2,
+      "completed": true
+    },
+    {
+      "label": "D",
+      "points": 1,
+      "completed": true
+    },
+    {
+      "label": "F",
+      "points": 0,
+      "completed": false
+    },
+    {
+      "label": "P",
+      "points": null,
+      "completed": true
+    },
+    {
+      "label": "I",
+      "points": null,
+      "completed": false
+    }
+  ],
+  "preferences": {
+    "theme": "light",
+    "precision": 2,
+    "onboarded": true
+  },
+  "target": {
+    "gpa": 3.5,
+    "credits": 15
+  },
+  "scenarios": []
+}

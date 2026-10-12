@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+const base=process.env.FOLIO_API_URL??'http://localhost:5080';
+const scale=[{label:'A',points:4,completed:true},{label:'B',points:3,completed:true},{label:'D',points:1,completed:true},{label:'F',points:0,completed:false}];
+const scoreBands=[{minimum:0,grade:'F'},{minimum:50,grade:'D'},{minimum:80,grade:'B'},{minimum:95,grade:'A'}];
+const course=(id,grade)=>({id,courseId:'same-course',name:'Database Systems',credits:3,grade});
+const request={scale,scoreBands,currentSemesterId:'now',semesters:[{id:'past',name:'Past',order:0,status:'completed',courses:[course('first','D')]},{id:'now',name:'Current',order:1,status:'in-progress',courses:[course('retake',null)]}]};
+let checks=0;
+async function post(endpoint,body,status=200){const r=await fetch(`${base}/api/gpa/${endpoint}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});assert.equal(r.status,status,await r.clone().text());checks++;return r.json();}
+let r=await post('overview',request);assert.equal(r.actual.total.gpa,1);assert.equal(r.potential.cumulative.gpa,4);assert.equal(r.potential.cumulative.gpaCredits,3);
+request.semesters[1].courses[0].assessments=[{id:'work',name:'Coursework',maximumMarks:40,earnedMarks:33,displayOrder:0},{id:'final',name:'Final',maximumMarks:60,earnedMarks:null,displayOrder:1}];
+r=await post('overview',request);assert.equal(r.potential.courses[0].maximumScore,93);assert.equal(r.potential.courses[0].earned,33);assert.equal(r.potential.courses[0].lost,7);assert.equal(r.potential.courses[0].remaining,60);assert.equal(r.potential.cumulative.gpa,3);assert.equal(r.actual.total.gpa,1);
+request.semesters[1].courses[0].assessments[0].maximumMarks=39;
+r=await post('overview',request);assert.equal(r.potential.valid,false);assert.equal(r.potential.cumulative,null);assert.equal(r.actual.total.gpa,1);
+request.semesters[1].courses[0].assessments[0].maximumMarks=30;
+await post('overview',request,400);
+request.semesters[1].courses[0].assessments[0].maximumMarks=40;
+await post('finalize',{...request,grades:[],confirmed:true},400);
+await post('finalize',{...request,grades:[{attemptId:'retake',grade:'B'}],confirmed:false},400);
+const final=await post('finalize',{...request,grades:[{attemptId:'retake',grade:'B'}],confirmed:true});assert.equal(final.status,'completed');assert.equal(final.courses[0].grade,'B');assert.equal(final.courses[0].assessments[1].earnedMarks,null);
+request.semesters[1]=final;request.currentSemesterId=null;r=await post('overview',request);assert.equal(r.potential,null);assert.equal(r.actual.total.gpa,3);assert.equal(r.actual.total.gpaCredits,3);assert.equal(r.actual.semesters[0].historical.gpa,1);
+console.log(`Passed ${checks} assessment HTTP checks: potential, retakes, draft validation, finalization and unchanged history.`);

@@ -1,0 +1,234 @@
+<section class="page-heading">
+  <div>
+    <div class="eyebrow">THE BIG PICTURE</div>
+    <h1>Your academic journey<span class="heading-dot">.</span></h1>
+    <p>A little perspective. A clearer path forward.</p>
+  </div>
+  <div class="heading-actions">
+    @if (store.data().semesters.length) {
+      <a class="button secondary" routerLink="/semesters" [queryParams]="{ create: 'course' }"
+        ><app-icon name="plus" /> Add course</a
+      >
+    }
+    <a class="button primary" routerLink="/semesters" [queryParams]="{ create: 'semester' }"
+      ><app-icon name="plus" /> Add semester</a
+    >
+  </div>
+</section>
+@if (!store.data().semesters.length) {
+  <section class="welcome-panel">
+    <div class="welcome-copy">
+      <span class="pill"><span class="local-dot"></span> YOUR NEXT CHAPTER</span>
+      <h2>Big ambitions.<br />One semester at a time.</h2>
+      <p>
+        Give your grades a home. See where you stand, explore what’s possible, and make a plan for
+        what comes next.
+      </p>
+      @if (!store.data().preferences.onboarded) {
+        <label class="onboarding-label"
+          >Start with your grading system<select [(ngModel)]="preset">
+            <option value="standard">4.0 scale · with plus / minus</option>
+            <option value="simple">4.0 scale · A, B, C, D, F</option>
+          </select></label
+        ><button class="button primary" (click)="start()">
+          Make this space yours <app-icon name="arrow" /></button
+        ><span class="small-note">You can customize every grade in Settings.</span>
+      } @else {
+        <a class="button primary" routerLink="/semesters"
+          >Create your first semester <app-icon name="arrow" /></a
+        ><span class="small-note">Or <a routerLink="/settings">import a previous backup</a>.</span>
+      }
+    </div>
+    <div class="welcome-art" aria-hidden="true">
+      <div class="orbit orbit-one"></div>
+      <div class="orbit orbit-two"></div>
+      <div class="paper paper-back"></div>
+      <div class="paper paper-front">
+        <div class="paper-head">
+          <span class="mini-brand">g.</span><span>THE NEXT CHAPTER</span>
+        </div>
+        <div class="paper-title">Room to grow.</div>
+        <div class="paper-line"></div>
+        <div class="paper-line short"></div>
+        <div class="abstract-bars"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="paper-bottom">YOUR POTENTIAL, IN PERSPECTIVE <span>↗</span></div>
+      </div>
+      <span class="art-label">A fresh start looks good on you.</span>
+    </div>
+  </section>
+  <div class="section-label"><span>A WORKSPACE THAT GROWS WITH YOU</span><span>01 — 03</span></div>
+  <div class="feature-grid">
+    <a routerLink="/semesters" class="feature-tile"
+      ><div class="feature-icon"><app-icon name="book" /></div>
+      <span class="feature-number">01</span>
+      <h3>Every credit counts.</h3>
+      <p>Keep semesters, courses, and grades together. We’ll take care of the math.</p>
+      <span class="text-link">Organize your semesters <app-icon name="arrow" /></span></a
+    ><a routerLink="/simulator" class="feature-tile"
+      ><div class="feature-icon"><app-icon name="simulator" /></div>
+      <span class="feature-number">02</span>
+      <h3>Turn “what if” into clarity.</h3>
+      <p>Try a different grade. Explore a future semester. See the possibilities instantly.</p>
+      <span class="text-link">Explore the simulator <app-icon name="arrow" /></span></a
+    ><a routerLink="/goals" class="feature-tile"
+      ><div class="feature-icon"><app-icon name="goals" /></div>
+      <span class="feature-number">03</span>
+      <h3>Give your goals a plan.</h3>
+      <p>Find the grades you need and build a realistic path to your target GPA.</p>
+      <span class="text-link">Set an academic goal <app-icon name="arrow" /></span
+    ></a>
+  </div>
+} @else {
+  <div class="section-label"><span>ACTUAL ACADEMIC PERFORMANCE · COMPLETED SEMESTERS</span></div>
+  <div class="metric-grid">
+    <section class="metric featured">
+      <div class="metric-label">
+        Adjusted cumulative GPA <span class="badge">{{ store.max() }} scale</span>
+      </div>
+      <div class="metric-value">
+        <app-number
+          [value]="store.actual()?.total?.gpa"
+          [precision]="store.data().preferences.precision"
+        /><span>/ {{ store.max().toFixed(1) }}</span>
+      </div>
+      <div class="metric-foot">
+        @if (trend() !== null) {
+          <span class="trend-chip"
+            ><app-icon name="trend" />{{ trend()! >= 0 ? '+' : ''
+            }}{{ store.format(trend()) }}</span
+          >
+          historical change since previous semester
+        } @else {
+          Your credit-weighted academic average
+        }
+      </div>
+    </section>
+    <section class="metric">
+      <div class="metric-label">Unique earned credits <app-icon name="book" /></div>
+      <div class="metric-value">
+        {{ store.actual()?.total?.completedCredits ?? '—' }}<span>hrs</span>
+      </div>
+      <div class="metric-foot">
+        {{ store.actual()?.total?.gpaCredits ?? '—' }} GPA-counted credits
+      </div>
+    </section>
+    <section class="metric">
+      <div class="metric-label">Completed semesters <app-icon name="semesters" /></div>
+      <div class="metric-value">{{ completed() }}<span>terms</span></div>
+      <div class="metric-foot">{{ store.data().semesters.length }} semesters in your journey</div>
+    </section>
+    <section class="metric">
+      <div class="metric-label">Latest attempt GPA <app-icon name="trend" /></div>
+      <div class="metric-value">
+        <app-number
+          [value]="latest()?.original?.gpa"
+          [precision]="store.data().preferences.precision"
+        />
+      </div>
+      <div class="metric-foot">
+        {{
+          latest()?.name ??
+            (store.error() || store.busy()
+              ? 'Waiting for calculation'
+              : 'Waiting for your first grades')
+        }}
+      </div>
+    </section>
+  </div>
+  <app-potential-summary [showCourses]="true" />
+  <div class="dashboard-grid">
+    <div class="dashboard-main">
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Progress, in perspective</h2>
+            <p>Completed history, retrospective adjustments, and a separate best-case extension</p>
+          </div>
+          <a routerLink="/analytics" class="text-link">View analytics <app-icon name="arrow" /></a>
+        </div>
+        @if (graded().length || store.current()) {
+          <app-chart [labels]="chartLabels()" [datasets]="chartData()" [max]="store.max()" />
+        } @else {
+          <div class="chart-empty">
+            <app-icon name="analytics" />
+            <h3>
+              {{
+                store.error()
+                  ? 'Your records are safe.'
+                  : store.busy()
+                    ? 'Putting your progress in perspective…'
+                    : 'Your story is still taking shape.'
+              }}
+            </h3>
+            <p>
+              {{
+                store.error()
+                  ? 'Reconnect the calculation server to see your chart.'
+                  : store.busy()
+                    ? 'Calculating from your saved courses.'
+                    : 'Add graded courses to see your progress here.'
+              }}
+            </p>
+          </div>
+        }
+      </section>
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Your semesters</h2>
+            <p>Small steps. Lasting progress.</p>
+          </div>
+          <a routerLink="/semesters" class="text-link">View all <app-icon name="arrow" /></a>
+        </div>
+        @for (s of store.semesters().slice(-3).reverse(); track s.id) {
+          <a class="semester-row" routerLink="/semesters" [queryParams]="{ semester: s.id }"
+            ><span class="semester-symbol"><app-icon name="semesters" /></span>
+            <div>
+              <h3>{{ s.name }}</h3>
+              <p>
+                {{ s.courses.length }} courses ·
+                {{ s.status === 'completed' ? 'Completed' : 'In progress' }}
+              </p>
+            </div>
+            <span class="semester-gpa"
+              >{{ store.format(semesterGpa(s.id)) }}<small>Adjusted GPA</small></span
+            ><app-icon name="arrow"
+          /></a>
+        }
+      </section>
+    </div>
+    <aside class="dashboard-aside">
+      <section class="goal-card">
+        <div class="eyebrow"><app-icon name="goals" /> YOUR NORTH STAR</div>
+        <h2>Aim a little higher.</h2>
+        <p>Every course is another step toward your goal.</p>
+        <div class="goal-values">
+          <strong>{{ store.format(store.data().target.gpa) }}</strong
+          ><span>target GPA</span>
+        </div>
+        <div class="progress-track"><div [style.width.%]="goalProgress()"></div></div>
+        <div class="progress-caption">
+          <span>Current {{ store.format(store.actual()?.total?.gpa) }}</span
+          ><span>{{ store.max().toFixed(1) }} scale</span>
+        </div>
+        <a routerLink="/goals" class="button secondary"
+          >Build your plan <app-icon name="arrow"
+        /></a>
+      </section>
+      <section class="aside-note">
+        <span class="feature-icon"><app-icon name="simulator" /></span>
+        <h3>What could next semester look like?</h3>
+        <p>Experiment with future grades. Your actual records stay untouched.</p>
+        <a routerLink="/simulator" class="text-link">Try a scenario <app-icon name="arrow" /></a>
+      </section>
+    </aside>
+  </div>
+}
+<div class="privacy-strip">
+  <app-icon name="lock" />
+  <p>
+    Your space, your data. Everything is saved in this browser.
+    <a routerLink="/settings">Keep a backup</a> for peace of mind.
+  </p>
+  <span>NO ACCOUNT NEEDED</span>
+</div>

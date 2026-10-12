@@ -4,7 +4,7 @@ A local academic workspace built with **Angular 22.2**, **ASP.NET Core / .NET 10
 
 ## Run locally
 
-Prerequisites: **.NET 10 SDK**, **Node.js 24.15+** (within the Node 24 release line), and npm. Angular compatibility details: [official Angular version guide](https://angular.dev/reference/versions).
+Prerequisites: **.NET 10 SDK**, **Node.js 24.15+** (within the Node 24 release line), and npm.
 
 Open two terminals in this project directory.
 
